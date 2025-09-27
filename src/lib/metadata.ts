@@ -50,7 +50,8 @@ async function getSiteSettings() {
       baseUrl: settings?.baseUrl || process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000',
       siteName: settings?.footerCompanyName || 'Your Company',
       siteDescription: settings?.footerCompanyDescription || 'Your company description',
-      ogImage: settings?.logoUrl || settings?.logoLightUrl || '/favicon.svg'
+      ogImage: settings?.logoUrl || settings?.logoLightUrl || '/favicon.svg',
+      twitterHandle: settings?.socialTwitter || '@yourcompany'
     };
   } catch (error) {
     console.error('Error fetching site settings:', error);
@@ -58,7 +59,8 @@ async function getSiteSettings() {
       baseUrl: process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000',
       siteName: 'Your Company',
       siteDescription: 'Your company description',
-      ogImage: '/favicon.svg'
+      ogImage: '/favicon.svg',
+      twitterHandle: '@yourcompany'
     };
   }
 }
@@ -522,7 +524,7 @@ async function generateMetadata(seoData: SEOMetadata): Promise<Metadata> {
       title: seoData.title,
       description: seoData.description,
       images: [seoData.ogImage || siteSettings.ogImage],
-      creator: "@saskiai",
+      creator: siteSettings.twitterHandle,
     },
     robots: {
       index: true,

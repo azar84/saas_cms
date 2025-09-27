@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Check, Sun, Moon, MessageSquare } from 'lucide-react';
 
@@ -13,14 +13,57 @@ interface SupportSectionProps {
   className?: string;
 }
 
+interface SiteSettings {
+  footerCompanyName?: string;
+  footerCompanyDescription?: string;
+  logoUrl?: string;
+  logoLightUrl?: string;
+  logoDarkUrl?: string;
+}
+
 const SupportSection: React.FC<SupportSectionProps> = ({
   heading = "Real-Time, Always-On Support",
   title = "No Delays. No Queues. Just Instant Answers.",
   description = "Whether it's 2 PM or 2 AM, our platform answers instantly—no wait, no backlog. Your customers get support, and you stay focused on growth.",
-  imageUrl = "https://saskiai.com/wp-content/uploads/2025/06/ChatGPT-Image-Jun-5-2025-at-09_59_27-AM-1.png",
+  imageUrl,
   imageAlt = "Real-time AI customer support illustration showing instant responses across multiple channels",
   className = ""
 }) => {
+  const [siteSettings, setSiteSettings] = useState<SiteSettings | null>(null);
+  const [dynamicImageUrl, setDynamicImageUrl] = useState<string>("/placeholder-support-image.png");
+
+  useEffect(() => {
+    const fetchSiteSettings = async () => {
+      try {
+        const response = await fetch(`/api/admin/site-settings?t=${Date.now()}`, {
+          cache: 'no-cache',
+          headers: {
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0'
+          }
+        });
+        
+        if (response.ok) {
+          const result = await response.json();
+          const settings = result.success ? result.data : result;
+          setSiteSettings(settings);
+          
+          // Use provided imageUrl or fallback to logo or placeholder
+          if (imageUrl) {
+            setDynamicImageUrl(imageUrl);
+          } else if (settings?.logoUrl || settings?.logoLightUrl) {
+            setDynamicImageUrl(settings.logoUrl || settings.logoLightUrl || "/placeholder-support-image.png");
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching site settings:', error);
+        // Keep default placeholder image
+      }
+    };
+
+    fetchSiteSettings();
+  }, [imageUrl]);
   return (
     <>
       <section className={`bg-gradient-to-b from-[#F6F8FC] to-[#FBFBFB] py-20 ${className}`}>
@@ -103,7 +146,7 @@ const SupportSection: React.FC<SupportSectionProps> = ({
                 <div className="absolute inset-0 flex items-center justify-center z-20">
                   <div className="relative max-w-sm">
                     <Image
-                      src={imageUrl}
+                      src={dynamicImageUrl}
                       alt={imageAlt}
                       width={400}
                       height={300}

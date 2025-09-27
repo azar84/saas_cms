@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { MessageCircle, Phone, Video, Globe, MessageSquare, Mic } from 'lucide-react';
@@ -14,14 +14,57 @@ interface ConversationSectionProps {
   className?: string;
 }
 
+interface SiteSettings {
+  footerCompanyName?: string;
+  footerCompanyDescription?: string;
+  logoUrl?: string;
+  logoLightUrl?: string;
+  logoDarkUrl?: string;
+}
+
 const ConversationSection: React.FC<ConversationSectionProps> = ({
   heading = "Smarter Conversations, Less Work",
   title = "Your AI Assistant. Everywhere Your Customers Are.",
   description = "Our platform responds on SMS, WhatsApp, voice, chat, and social platforms — instantly capturing leads, solving support issues, and syncing with your CRM.",
-  imageUrl = "https://saskiai.com/wp-content/uploads/2025/06/ChatGPT-Image-Jun-1-2025-at-08_09_09-AM.png",
+  imageUrl,
   imageAlt = "3D illustration of our assistant interface automating customer support tasks including chat replies, CRM updates, appointment confirmations, and ticket creation across WhatsApp, Messenger, SMS, and voice channels.",
   className = ""
 }) => {
+  const [siteSettings, setSiteSettings] = useState<SiteSettings | null>(null);
+  const [dynamicImageUrl, setDynamicImageUrl] = useState<string>("/placeholder-conversation-image.png");
+
+  useEffect(() => {
+    const fetchSiteSettings = async () => {
+      try {
+        const response = await fetch(`/api/admin/site-settings?t=${Date.now()}`, {
+          cache: 'no-cache',
+          headers: {
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0'
+          }
+        });
+        
+        if (response.ok) {
+          const result = await response.json();
+          const settings = result.success ? result.data : result;
+          setSiteSettings(settings);
+          
+          // Use provided imageUrl or fallback to logo or placeholder
+          if (imageUrl) {
+            setDynamicImageUrl(imageUrl);
+          } else if (settings?.logoUrl || settings?.logoLightUrl) {
+            setDynamicImageUrl(settings.logoUrl || settings.logoLightUrl || "/placeholder-conversation-image.png");
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching site settings:', error);
+        // Keep default placeholder image
+      }
+    };
+
+    fetchSiteSettings();
+  }, [imageUrl]);
   const channels = [
     { icon: MessageCircle, name: 'SMS & WhatsApp', color: '#25D366' },
     { icon: Phone, name: 'Voice Calls', color: '#5243E9' },
@@ -46,7 +89,7 @@ const ConversationSection: React.FC<ConversationSectionProps> = ({
               {/* 3D Device with Glass Effect */}
               <div className="relative w-full h-full rounded-2xl overflow-hidden backdrop-blur-md bg-white/10 shadow-2xl border border-white/20">
                 <Image
-                  src={imageUrl}
+                  src={dynamicImageUrl}
                   alt={imageAlt}
                   fill
                   className="object-cover"
