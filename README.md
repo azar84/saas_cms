@@ -291,3 +291,5 @@ MIT License - see LICENSE file for details
 ---
 
 **Built with ❤️ using Next.js, TypeScript, Tailwind CSS, and Prisma**
+
+> Triggering deployment pipeline update.

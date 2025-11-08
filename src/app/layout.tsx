@@ -34,6 +34,12 @@ export async function generateMetadata(): Promise<Metadata> {
   const companyDescription = siteSettings?.footerCompanyDescription || 'Your company description and value proposition.';
   const baseUrl = siteSettings?.baseUrl || 'https://yourcompany.com';
 
+  const favicon =
+    siteSettings?.faviconDarkUrl ||
+    siteSettings?.faviconLightUrl ||
+    siteSettings?.faviconUrl ||
+    '/favicon.svg';
+
   return {
     title: `${companyName} - ${companyDescription}`,
     description: companyDescription,
@@ -89,6 +95,12 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     other: {
       'color-scheme': 'light'
+    },
+    icons: {
+      icon: favicon,
+      shortcut: favicon,
+      apple: favicon,
+      other: favicon.endsWith('.svg') ? [{ rel: 'mask-icon', url: favicon }] : [],
     },
   };
 }

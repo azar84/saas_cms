@@ -27,7 +27,6 @@ interface FAQ {
 interface FAQSectionProps {
   faqs?: FAQ[];
   categories?: FAQCategory[];
-  sectionCategories?: number[]; // Array of category IDs selected for this section
   heading?: string;
   subheading?: string;
   heroTitle?: string;
@@ -35,6 +34,7 @@ interface FAQSectionProps {
   searchPlaceholder?: string;
   showCategories?: boolean;
   defaultCategory?: number;
+  sectionCategories?: number[]; // Array of category IDs selected for this section
   className?: string;
   backgroundColor?: string;
   heroBackgroundColor?: string;
