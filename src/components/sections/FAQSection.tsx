@@ -27,7 +27,6 @@ interface FAQ {
 interface FAQSectionProps {
   faqs?: FAQ[];
   categories?: FAQCategory[];
-  sectionCategories?: number[]; // Array of category IDs selected for this section
   heading?: string;
   subheading?: string;
   heroTitle?: string;
@@ -35,6 +34,7 @@ interface FAQSectionProps {
   searchPlaceholder?: string;
   showCategories?: boolean;
   defaultCategory?: number;
+  sectionCategories?: number[]; // Array of category IDs selected for this section
   className?: string;
   backgroundColor?: string;
   heroBackgroundColor?: string;
@@ -167,10 +167,11 @@ export default function FAQSection({
 
   // Auto-select first category when there are multiple categories and no category is selected
   useEffect(() => {
-    if (!faqCategoryId && !defaultCategory && sortedCategories.length > 1 && selectedCategory === null) {
-      // Auto-select the first category when there are multiple categories
-      setSelectedCategory(sortedCategories[0]?.id || null);
-    }
+    // Temporarily disabled to test if auto-selection is interfering with manual filtering
+    // if (!faqCategoryId && !defaultCategory && sortedCategories.length > 1 && selectedCategory === null) {
+    //   // Auto-select the first category when there are multiple categories
+    //   setSelectedCategory(sortedCategories[0]?.id || null);
+    // }
   }, [sortedCategories, faqCategoryId, defaultCategory, selectedCategory]);
 
   const toggleFAQ = (faqId: number) => {
@@ -184,16 +185,7 @@ export default function FAQSection({
 
   const clearSearch = () => {
     setSearchTerm('');
-    if (!faqCategoryId) {
-      // Only reset to null if there's only one category or no categories
-      // Otherwise, keep the current selection or default to first category
-      if (sortedCategories.length <= 1) {
-        setSelectedCategory(null);
-      } else if (selectedCategory === null) {
-        // If no category is selected and there are multiple categories, select the first one
-        setSelectedCategory(sortedCategories[0]?.id || null);
-      }
-    }
+    // Don't change category selection when clearing search
     setOpenFAQ(null);
   };
 
